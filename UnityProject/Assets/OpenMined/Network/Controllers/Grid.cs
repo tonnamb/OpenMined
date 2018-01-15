@@ -81,21 +81,24 @@ namespace OpenMined.Network.Controllers
             var grad = controller.floatTensorFactory.Create(_data: new float[] { 1, 1, 1, 1 }, 
                                                             _shape: new int[] { 4, 1 });
 
-            var pred = seq.Forward(input);
-
-            var loss = pred.Sub(target).Pow(2);
-            loss.Backward(grad);
-
-            foreach (var p in seq.getParameters())
+            for (var i = 0; i < 10; ++i)
             {
-                var pTensor = controller.floatTensorFactory.Get(p);
-                pTensor.Sub(pTensor.Grad, inline: true);
+                var pred = seq.Forward(input);
+
+                var loss = pred.Sub(target).Pow(2);
+                loss.Backward(grad);
+
+                foreach (var p in seq.getParameters())
+                {
+                    var pTensor = controller.floatTensorFactory.Get(p);
+                    pTensor.Sub(pTensor.Grad, inline: true);
+                }
+
+                var layerIdxs = seq.getLayers();
+                Linear lin = (Linear)controller.getModel(layerIdxs[0]);
+
+                Debug.Log("I AM LEARNING: " + loss.Data);
             }
-
-            var layerIdxs = seq.getLayers();
-            Linear lin = (Linear)controller.getModel(layerIdxs[0]);
-
-            Debug.Log(string.Join(",", loss.Data));
         }
 
         private Sequential CreateSequential(List<String> model)
@@ -144,13 +147,15 @@ namespace OpenMined.Network.Controllers
         [SerializeField] public string target;
         [SerializeField] public List<String> Model;
         [SerializeField] public float lr;
+        [SerializeField] public int epochs = 10;
 
-        public IpfsModel (string input, string target, List<String> model, float lr)
+        public IpfsModel (string input, string target, List<String> model, float lr, int epochs = 10)
         {
             this.input = input;
             this.target = target;
             this.Model = model;
             this.lr = lr;
+            this.epochs = epochs;
         }
     }
 }

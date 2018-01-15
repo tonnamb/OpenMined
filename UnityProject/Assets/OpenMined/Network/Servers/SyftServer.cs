@@ -26,16 +26,16 @@ namespace OpenMined.Network.Servers
 			controller = new SyftController(shader);
             var request = new Request();
 
-            //var ipfsAddress = request.modelResponse.configAddress;
+            // var ipfsAddress = request.modelResponse.configAddress;
 
-            //IpfsModel model = Ipfs.GetModel(ipfsAddress);
-            //if (model != null)
-            //{
-            //    Debug.Log("Got the IpfsModel: " + model.input);
+            IpfsModel model = Ipfs.GetModel("QmetoximrDhXCpGCWfZJE4YzwkB6CJhXcdk8nqL7jS53Vb");
+            if (model != null)
+            {
+                Debug.Log("Got the IpfsModel: " + model.input);
                 
-            //    var g = new Controllers.Grid(controller);
-            //    //g.TrainModel(model);
-            //}
+                var g = new Controllers.Grid(controller);
+                g.TrainModel(model);
+            }
 		}
 
 		private void Update()
