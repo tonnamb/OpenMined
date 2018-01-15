@@ -1,7 +1,8 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
-using System;
+using Newtonsoft.Json.Linq;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace OpenMined.Network.Servers
 {
@@ -11,7 +12,13 @@ namespace OpenMined.Network.Servers
  
         public void Start()
         {
-            PollNext();
+            var o = ReadConfig();
+
+            if (o["trainer"].ToObject<bool>())
+            {
+                Debug.Log("POLLING");
+                PollNext();
+            }
         }
 
         void PollNext()
@@ -30,6 +37,14 @@ namespace OpenMined.Network.Servers
 
             yield return new WaitForSeconds(10);
             PollNext();
+        }
+        
+        JObject ReadConfig()
+        {
+            using (StreamReader reader = File.OpenText("Assets/OpenMined/Config/config.json"))
+            {
+                return (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+            }
         }
     }
 }

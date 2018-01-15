@@ -1,9 +1,9 @@
 using UnityEngine;
 using OpenMined.Network.Controllers;
-using UnityEngine.Networking;
 using System.Collections;
-using OpenMined.Syft.Tensor;
-using OpenMined.Syft.Tensor.Factories;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OpenMined.Network.Servers
 {
@@ -57,5 +57,6 @@ namespace OpenMined.Network.Servers
 		public ComputeShader Shader {
 			get { return shader; }
 		}
+
 	}
 }
