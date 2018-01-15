@@ -3,6 +3,7 @@ using System.Collections;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using Newtonsoft.Json;
+using OpenMined.Network.Controllers;
 
 namespace OpenMined.Network.Servers
 {
@@ -32,6 +33,19 @@ namespace OpenMined.Network.Servers
 
             yield return request.GetBlockNumber(this);
             yield return request.GetModel(this);
+            
+            var ipfsAddress = request.modelResponse.configAddress;
+
+            Debug.Log("IPFS address: " + ipfsAddress);
+
+            IpfsModel model = Ipfs.GetModel(ipfsAddress);
+            if (model != null)
+            {
+                Debug.Log("Got the IpfsModel: " + model.input);
+                
+                //var g = new Controllers.Grid(controller);
+                //g.TrainModel(model);
+            }
 
             Debug.Log("Blockchain polled");
 
