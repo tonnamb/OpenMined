@@ -40,13 +40,15 @@ namespace OpenMined.UI
         private IEnumerator Start()
         {
             Debug.Log("Login OnGUI()");
+            
+            Request r = new Request();
 
-            Request req = new Request(this, Request.GetIdentity(""));
-            yield return req.coroutine;
+            Request req = new Request(this, r.GetIdentity(""));
+            yield return req.Coroutine;
             string URI = req.result as string;
             Debug.LogFormat("\nURI: {0}", URI);
 
-            Texture2D qrTexture = generateQR(URI);
+            Texture2D qrTexture = GenerateQR(URI);
             Sprite qrSprite = Sprite.Create(qrTexture, new Rect(0.0f, 0.0f, 256, 256), new Vector2(0.5f, 0.5f), 100.0f);
             loginButton.image.sprite = qrSprite;
         }
