@@ -18,29 +18,24 @@ namespace OpenMined.Network.Servers
 
 		[SerializeField] private ComputeShader shader;
 
-		private IEnumerator Start()
+		private void Start()
 		{
 			_netMqPublisher = new NetMqPublisher(HandleMessage);
 			_netMqPublisher.Start();
 
 			controller = new SyftController(shader);
-
             var request = new Request();
 
-            yield return request.GetBlockNumber(this);
+            //var ipfsAddress = request.modelResponse.configAddress;
 
-            yield return request.GetModel(this);
-
-            var ipfsAddress = request.modelResponse.configAddress;
-
-            IpfsModel model = Ipfs.GetModel(ipfsAddress);
-            if (model != null)
-            {
-                Debug.Log("Got the IpfsModel: " + model.input);
+            //IpfsModel model = Ipfs.GetModel(ipfsAddress);
+            //if (model != null)
+            //{
+            //    Debug.Log("Got the IpfsModel: " + model.input);
                 
-                var g = new Controllers.Grid(controller);
-                //g.TrainModel(model);
-            }
+            //    var g = new Controllers.Grid(controller);
+            //    //g.TrainModel(model);
+            //}
 		}
 
 		private void Update()
