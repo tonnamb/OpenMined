@@ -24,11 +24,11 @@ namespace OpenMined.Network.Controllers
 
 		public FloatTensorFactory floatTensorFactory;
 		public IntTensorFactory intTensorFactory;
-		
+
 		private Dictionary<int, Model> models;
 		private Dictionary<int, Syft.NN.RL.Agent> agents;
 		private Dictionary<int, Optimizer> optimizers;
-		
+
 		public bool allow_new_tensors = true;
 
 		public SyftController (ComputeShader _shader)
@@ -37,7 +37,7 @@ namespace OpenMined.Network.Controllers
 
 			floatTensorFactory = new FloatTensorFactory(_shader, this);
 			intTensorFactory = new IntTensorFactory(_shader);
-			
+
 			models = new Dictionary<int, Model> ();
 			agents = new Dictionary<int, Syft.NN.RL.Agent>();
 			optimizers = new Dictionary<int, Optimizer>();
@@ -52,7 +52,7 @@ namespace OpenMined.Network.Controllers
            float _inputSize = (float)inputSize;
            float Xavier = (float)Math.Sqrt(1.0F / _inputSize);
            float[] syn0 = new float[length];
-           
+
             for (int i = 0; i < length; i++)
             {
                 // Use Xavier Initialization if inputSize is given
@@ -89,7 +89,7 @@ namespace OpenMined.Network.Controllers
 		{
 			return optimizers[index];
 		}
-		
+
 		public ComputeShader GetShader ()
 		{
 			return shader;
@@ -107,16 +107,16 @@ namespace OpenMined.Network.Controllers
 				return agents[agent_id];
 			return null;
 		}
-		
+
 		public void setAgentId(int old_id, int new_id)
 		{
 			Syft.NN.RL.Agent old = getAgent(old_id);
-			
+
 			if (agents.ContainsKey(new_id))
 			{
 				models.Remove(new_id);
 			}
-			
+
 			agents.Add(new_id, old);
 
 			if (old_id != new_id)
@@ -124,9 +124,9 @@ namespace OpenMined.Network.Controllers
 				agents.Remove(old_id);
 				agents.Add(old_id, null);
 			}
-			
+
 		}
-		
+
 		public int addModel (Model model)
 		{
 			models.Add (model.Id, model);
@@ -136,12 +136,12 @@ namespace OpenMined.Network.Controllers
 		public void setModelId(int old_id, int new_id)
 		{
 			Model old = getModel(old_id);
-			
+
 			if (models.ContainsKey(new_id))
 			{
 				models.Remove(new_id);
 			}
-			
+
 			models.Add(new_id, old);
 
 			if (old_id != new_id)
@@ -149,9 +149,9 @@ namespace OpenMined.Network.Controllers
 				models.Remove(old_id);
 				models.Add(old_id, null);
 			}
-			
+
 		}
-		
+
 		public int addOptimizer (Optimizer optim)
 		{
 			optimizers.Add (optim.Id, optim);
@@ -162,7 +162,7 @@ namespace OpenMined.Network.Controllers
 		{
 			Debug.LogFormat(message);
 		}
-		
+
 		public string processMessage (string json_message, MonoBehaviour owner)
 		{
 			//Debug.LogFormat("<color=green>SyftController.processMessage {0}</color>", json_message);
@@ -190,7 +190,7 @@ namespace OpenMined.Network.Controllers
 							{
 								hp.Add(float.Parse(msgObj.hyperParams[i]));
 							}
-							
+
 							Optimizer optim = null;
 
 							if (optimizer_type == "sgd")
@@ -205,7 +205,7 @@ namespace OpenMined.Network.Controllers
 							{
 								optim = new Adam(this, p, hp[0], hp[1], hp[2], hp[3], hp[4]);
 							}
-							
+
 							return optim.Id.ToString();
 						}
 						else
@@ -255,11 +255,11 @@ namespace OpenMined.Network.Controllers
 							Optimizer optimizer = optimizers[int.Parse(msgObj.tensorIndexParams[1])];
 							return new Syft.NN.RL.Agent(this, model, optimizer).Id.ToString();
 						}
-						
+
 						//Debug.Log("Getting Model:" + msgObj.objectIndex);
 						Syft.NN.RL.Agent agent = this.getAgent(msgObj.objectIndex);
 						return agent.ProcessMessageLocal(msgObj, this);
-					
+
 
 					}
 					case "model":
@@ -269,7 +269,7 @@ namespace OpenMined.Network.Controllers
 							string model_type = msgObj.tensorIndexParams[0];
 
 							Debug.LogFormat("<color=magenta>createModel:</color> {0}", model_type);
-							
+
 							if (model_type == "linear")
 							{
 								return this.BuildLinear(msgObj.tensorIndexParams).Id.ToString();
@@ -310,6 +310,10 @@ namespace OpenMined.Network.Controllers
               {
                   return new CrossEntropyLoss(this, int.Parse(msgObj.tensorIndexParams[1])).Id.ToString();
               }
+              else if (model_type == "categorical_crossentropy")
+              {
+                  return new CategoricalCrossEntropyLoss(this).Id.ToString();
+              }
 							else if (model_type == "nllloss")
 							{
 								return new NLLLoss(this).Id.ToString();
@@ -345,9 +349,9 @@ namespace OpenMined.Network.Controllers
 							return models.Count + "";
 						} else if (msgObj.functionCall == "new_tensors_allowed")
 						{
-							
-							
-								Debug.LogFormat("New Tensors Allowed:{0}", msgObj.tensorIndexParams[0]);	
+
+
+								Debug.LogFormat("New Tensors Allowed:{0}", msgObj.tensorIndexParams[0]);
 								if (msgObj.tensorIndexParams[0] == "True")
 								{
 									allow_new_tensors = true;
@@ -359,7 +363,7 @@ namespace OpenMined.Network.Controllers
 								{
 									throw new Exception("Invalid parameter for new_tensors_allowed. Did you mean true or false?");
 								}
-							
+
 							return allow_new_tensors + "";
 						}else if (msgObj.functionCall == "load_floattensor")
 						{
@@ -443,7 +447,7 @@ namespace OpenMined.Network.Controllers
 								var layer_desc = config["config"][i];
 								var layer_config_desc = layer_desc["config"];
 
-								if ((string) layer_desc["class_name"] == "Linear"){	
+								if ((string) layer_desc["class_name"] == "Linear"){
 									int previous_output_dim;
 
 									if (i == 0)
@@ -485,7 +489,7 @@ namespace OpenMined.Network.Controllers
 									return "Unity Error: SyftController.processMessage: while Loading layers, Layer :" + layer_desc["class_name"] + " is not implemented";
 								}
 							}
-							
+
 							return model.Id.ToString();
 						}
 						return "Unity Error: SyftController.processMessage: Command not found:" + msgObj.objectType + ":" + msgObj.functionCall;
@@ -513,7 +517,7 @@ namespace OpenMined.Network.Controllers
 			}
 
 			// If not executing createTensor or tensor function, return default error.
-			return "Unity Error: SyftController.processMessage: Command not found:" + msgObj.objectType + ":" + msgObj.functionCall;            
+			return "Unity Error: SyftController.processMessage: Command not found:" + msgObj.objectType + ":" + msgObj.functionCall;
 		}
 
 		private Sequential BuildSequential()
@@ -533,35 +537,35 @@ namespace OpenMined.Network.Controllers
 		private Dropout BuildDropout(string[] Params)
 		{
 			float rate = float.Parse(Params[1]);
-			
+
 			return new Dropout(this, rate);
 		}
 
 		private ReLU BuildReLU()
 		{
-			return new ReLU(this);	
+			return new ReLU(this);
 		}
 
 		private Log BuildLog()
 		{
-			return new Log(this);	
+			return new Log(this);
 		}
 
 		private Sigmoid BuildSigmoid()
 		{
-			return new Sigmoid(this);	
+			return new Sigmoid(this);
 		}
 
 		private Softmax BuildSoftmax(string[] Params)
 		{
 			int reduction_dim = int.Parse(Params[1]);
-			return new Softmax(this, reduction_dim);	
+			return new Softmax(this, reduction_dim);
 		}
 
 		private LogSoftmax BuildLogSoftmax(string[] Params)
 		{
 			int reduction_dim = int.Parse(Params[1]);
-			return new LogSoftmax(this, reduction_dim);	
+			return new LogSoftmax(this, reduction_dim);
 		}
 	}
 }
