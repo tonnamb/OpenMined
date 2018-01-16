@@ -46,7 +46,7 @@ namespace OpenMined.Network.Servers
                 Debug.Log("Got the IpfsModel: " + model.input);
                 
                 //var g = new Controllers.Grid(controller);
-                //g.TrainModel(model);
+                //g.TrainModel(model, numModels - 1);
             }
 
             Debug.Log("Blockchain polled");

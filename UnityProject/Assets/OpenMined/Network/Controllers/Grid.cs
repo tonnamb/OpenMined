@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using OpenMined.Network.Utils;
 using OpenMined.Network.Servers;
 using OpenMined.Syft.Layer;
@@ -85,7 +84,7 @@ namespace OpenMined.Network.Controllers
             PollNext(owner, request);
         }
 
-        public void TrainModel(IpfsModel model)
+        public void TrainModel(IpfsModel model, int modelId)
         {
             var seq = CreateSequential(model.Model);
 
@@ -117,6 +116,9 @@ namespace OpenMined.Network.Controllers
             Linear lin = (Linear)controller.getModel(layerIdxs[0]);
 
             Debug.Log(string.Join(",", loss.Data));
+
+            var req = new Request();
+            req.AddWeights(modelId, "QmNqVVej89i1xDGDgiHZzXbiX9RypoFGFEGHgWqeZBRaUk");
         }
 
         private Sequential CreateSequential(List<String> model)
