@@ -101,8 +101,24 @@ namespace OpenMined.Network.Servers
             }
         }
 
-        public IEnumerator IdentityRequest(string URL)
+        public IEnumerator IdentityRequest(string method = "", int modelId = 0, string address = "")
         {
+            string URL = identityURL;
+
+            if (method.Length > 0)
+            {
+                URL += "/" + method;
+                if (method == "addWeights")
+                {
+                    
+                    URL += "?model=" + modelId + "&weights=:" + address;
+                }
+                else if (method == "addModel")
+                {
+                    URL += "?model=" + address;
+                }
+            }
+        
             Debug.LogFormat("Request.GetIdentity {0}", URL);
             UnityWebRequest www = UnityWebRequest.Get(URL);
             www.SetRequestHeader("accept", "text/plain");
@@ -118,35 +134,6 @@ namespace OpenMined.Network.Servers
             {
                 yield return www.downloadHandler.text;
             }
-        }
-
-        public IEnumerator GetIdentity()
-        {
-            string URL = identityURL;
-
-            yield return IdentityRequest(URL);
-        }
-
-        public IEnumerator AddModelIdentity(string modelAddress)
-        {
-            string URL = identityURL;
-
-            var model = WWW.EscapeURL(modelAddress);
-            URL += "/addModel?model=" + model;
-
-            yield return IdentityRequest(URL);
-        }
-
-        public IEnumerator AddWeightsIdentity(string modelId, string weightsAddress)
-        {
-            string URL = identityURL;
-
-            var id = WWW.EscapeURL(modelId);
-            var address = WWW.EscapeURL(weightsAddress);
-
-            URL += "/addWeights?modelId=" + modelId + "&weightsAddress=" + address;
-
-            yield return IdentityRequest(URL);
         }
 
         public IEnumerator Get<T>(string method, string data = "") where T : EthResponse
@@ -247,7 +234,7 @@ namespace OpenMined.Network.Servers
 
         public IEnumerator AddModel(MonoBehaviour owner, string ipfsHash)
         {
-            Request req = new Request(owner, AddModelIdentity(ipfsHash));
+            Request req = new Request(owner, IdentityRequest("addModel", 0, ipfsHash));
             yield return req.Coroutine;
 
             Debug.LogFormat("response {0}", req.result);
@@ -255,7 +242,10 @@ namespace OpenMined.Network.Servers
 
         public IEnumerator AddWeights(MonoBehaviour owner, int modelId, string ipfsHash)
         {
-            Request req = new Request(owner, AddWeightsIdentity(modelId.ToString(), ipfsHash));
+            Debug.Log("ADDING WEIGHTS");
+
+            Request req = new Request(owner, IdentityRequest("addWeights", modelId, ipfsHash));
+
             yield return req.Coroutine;
             
             Debug.LogFormat("add weights response {0}", req.result);
