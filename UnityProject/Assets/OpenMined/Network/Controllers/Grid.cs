@@ -117,11 +117,12 @@ namespace OpenMined.Network.Controllers
             var layerIdxs = seq.getLayers();
             Linear lin = (Linear)controller.getModel(layerIdxs[0]);
 
-            Debug.Log(string.Join(",", loss.Data));*/
+            Debug.Log(string.Join(",", loss.Data));
 
-
-            var req = new Request();
-            owner.StartCoroutine(req.AddWeights(owner, modelId, "QmNqVVej89i1xDGDgiHZzXbiX9RypoFGFEGHgWqeZBRaUk"));
+            // TODO upload weights to IPFS and replace below IPFS address with that
+            // and uncomment
+            //var req = new Request();
+            //owner.StartCoroutine(req.AddWeights(owner, modelId, "QmNqVVej89i1xDGDgiHZzXbiX9RypoFGFEGHgWqeZBRaUk"));
         }
 
         private Sequential CreateSequential(List<String> model)
