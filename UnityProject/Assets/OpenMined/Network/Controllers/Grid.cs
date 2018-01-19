@@ -95,7 +95,8 @@ namespace OpenMined.Network.Controllers
                 {
                     var pTensor = controller.floatTensorFactory.Get(p);
                     var g = (FloatTensor) pTensor.Grad;
-                    pTensor.Sub(g.Mul(0.01), inline: true);
+                    var scaled = g.Mul(0.01f);
+                    pTensor.Sub(scaled, inline: true);
                 }
             }
 
