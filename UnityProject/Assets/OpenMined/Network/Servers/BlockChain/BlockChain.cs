@@ -51,13 +51,13 @@ namespace OpenMined.Network.Servers.BlockChain
 
                 var result = grid.TrainModel(job);
 
-                //var response = new AddResultRequest(jobHash, result);
-                //yield return response.RunRequest();
+                var response = new AddResultRequest(jobHash, result);
+                yield return response.RunRequest();
 
-                //Debug.Log("did a job");
+                Debug.Log("did a job");
 
-                // yield return new WaitForSeconds(10);
-                // PollNext();    
+                yield return new WaitForSeconds(10);
+                PollNext();    
             }
         }
 
