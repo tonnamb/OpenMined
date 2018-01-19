@@ -1,6 +1,7 @@
 using System;
 using OpenMined.Network.Controllers;
 using OpenMined.Syft.Tensor;
+using Newtonsoft.Json.Linq;
 
 namespace OpenMined.Syft.Layer
 {
@@ -25,5 +26,15 @@ namespace OpenMined.Syft.Layer
         }
         
         public override int getParameterCount(){return 0;}
+
+        public override JToken GetConfig()
+        {
+            var config = new JObject
+            {
+                { "name", "tanh" },
+            };
+
+            return config;
+        }
     }
 }

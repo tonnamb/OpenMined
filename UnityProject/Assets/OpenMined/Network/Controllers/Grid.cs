@@ -82,15 +82,13 @@ namespace OpenMined.Network.Controllers
             var targetShape = tmpTarget.SelectToken("shape").ToObject<int[]>();
             var targetTensor = controller.floatTensorFactory.Create(_data: targetData, _shape: targetShape, _autograd: true);
 
-            var grad = controller.floatTensorFactory.Create(_data: new float[] { 1, 1, 1, 1 }, 
-                                                            _shape: new int[] { 4, 1 });
 
             // 10 epochs .. make configurable
             for (var i = 0; i < 10; ++i) {
                 var pred = seq.Forward(inputTensor);
 
                 var loss = pred.Sub(targetTensor).Pow(2);
-                loss.Backward(grad);
+                loss.Backward();
 
                 foreach (var p in seq.getParameters())
                 {
@@ -143,6 +141,10 @@ namespace OpenMined.Network.Controllers
                         var rate = layer.SelectToken("config.rate").ToObject<float>();
                         var dropout = new Dropout(controller, rate);
                         seq.AddLayer(dropout);
+                        break;
+                    case "Tanh":
+                        var tanh = new Tanh(controller);
+                        seq.AddLayer(tanh);
                         break;
                     case "Softmax":
                         var dim = layer.SelectToken("config.dim").ToObject<int>();
