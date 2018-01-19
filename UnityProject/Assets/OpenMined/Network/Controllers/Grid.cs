@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpenMined.UI;
 using OpenMined.Network.Servers.BlockChain;
+using OpenMined.Syft.Tensor;
 
 namespace OpenMined.Network.Controllers
 {
@@ -93,7 +94,8 @@ namespace OpenMined.Network.Controllers
                 foreach (var p in seq.getParameters())
                 {
                     var pTensor = controller.floatTensorFactory.Get(p);
-                    pTensor.Sub(pTensor.Grad, inline: true);
+                    var g = (FloatTensor) pTensor.Grad;
+                    pTensor.Sub(g.Mul(0.01), inline: true);
                 }
             }
 
