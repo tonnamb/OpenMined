@@ -22,7 +22,6 @@ namespace OpenMined.Syft.Layer
 		{
             init(name);
 
-
 			this.controller = _controller;
 			
 			_input = input;
@@ -45,8 +44,6 @@ namespace OpenMined.Syft.Layer
                 _bias = controller.floatTensorFactory.Create(_data: bias, _shape: biasShape, _autograd: true);
                 parameters.Add(_bias.Id);
             };
-
-
 
             #pragma warning disable 420
             id = System.Threading.Interlocked.Increment(ref nCreated);
@@ -105,7 +102,7 @@ namespace OpenMined.Syft.Layer
 				{ "dtype", "float32" }, 
 				{ "output", _output },
                 { "input", _input },
-                { "bias", _bias.GetConfig() },
+                { "bias", _bias?.GetConfig() },
                 { "weights", _weights.GetConfig() },
 				{ "activation", "linear" },
 				{ "use_bias", true },
