@@ -34,16 +34,20 @@ namespace OpenMined.Network.Controllers
             getResultRequest.RunRequestSync();
             var responseHash = getResultRequest.GetResponse().resultAddress;
 
-            // load the model into memory
-            var response = Ipfs.Get<IpfsJob>(responseHash);
-            if (response == null)
+            while (responseHash == "")
             {
-                // try again in 5 seconds
                 Debug.Log(string.Format("Could not load job {0}. Trying again in 5 seconds.", job));
                 await Task.Delay(5000);
-                return await LoadModelFromJob(job);
+
+                // run the request again
+                getResultRequest = new GetResultsRequest(job);
+                getResultRequest.RunRequestSync();
+                responseHash = getResultRequest.GetResponse().resultAddress;
             }
 
+            // load the model into memory
+
+            var response = Ipfs.Get<IpfsJob>(responseHash);
             var modelDefinition = response.Model;
             var model = this.CreateSequential(modelDefinition);
 
