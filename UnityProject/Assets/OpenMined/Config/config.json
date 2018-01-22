@@ -1,5 +1,5 @@
 {
-  "trainer": true,
+  "trainer": false,
   "identify": false,
   "bygoneServer": "192.168.2.14"
 }
