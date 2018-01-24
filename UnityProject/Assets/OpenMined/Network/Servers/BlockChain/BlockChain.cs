@@ -17,7 +17,7 @@ namespace OpenMined.Network.Servers.BlockChain
         {
             var o = ReadConfig();
 
-            if (o["trainer"].ToObject<bool>())
+            if (Config.Config.trainer)
             {
                 Debug.Log("POLLING");
                 PollNext();

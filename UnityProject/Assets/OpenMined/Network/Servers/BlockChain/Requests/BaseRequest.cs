@@ -86,7 +86,7 @@ namespace OpenMined.Network.Servers.BlockChain.Requests
             using (StreamReader reader = File.OpenText("Assets/OpenMined/Config/config.json"))
             {
                 var config = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
-                return config["bygoneServer"].ToObject<string>();
+                return Config.Config.bygoneServer;
             }
         }
 
