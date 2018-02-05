@@ -180,3 +180,16 @@ def test_int_trace():
     # a doesn't change (non-inline)
     np.testing.assert_almost_equal(a.to_numpy(), data,
                                    decimal=decimal_accuracy, verbose=verbosity)
+
+def test_int_topk():
+    data = np.array([[[3, 2], [12, 4]], [[6, 44], [43, 2]]])
+    a = IntTensor(data)
+    result = a.topk(1)
+    expected = np.array([[[3], [12]], [[43], [44]]])
+
+    np.testing.assert_almost_equal(result.to_numpy(), expected,
+                                decimal=decimal_accuracy, verbose=verbosity)
+
+    # a doesn't change (non-inline)
+    np.testing.assert_almost_equal(a.to_numpy(), data,
+                                   decimal=decimal_accuracy, verbose=verbosity)

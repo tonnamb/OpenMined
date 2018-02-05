@@ -447,6 +447,184 @@ namespace OpenMined.Syft.Tensor
             return Enumerable.Range(0, shape.Min()).AsParallel().Select(i => this[i * stride]).Sum();
         }
 
+        public IntTensor TopK(int k, int dim = -1, bool largest = true , bool sorted= true,  bool inline = false)
+        {
+            if (dataOnGpu)
+            {
+                throw new NotImplementedException();
+            }
+            
+            if (dim < 0)
+            {
+                //e.g 5 + (-1) = 4
+                dim = this.shape.Length + dim; 
+            }
+            // check if dim and k match the tensor shape
+            if (dim >= this.shape.Length)
+            {
+                throw new ArgumentException("dimension out of range");
+            }
+            else if (k == this.shape[dim] )
+            {
+                if (inline)
+                {
+                    throw new NotImplementedException();
+                }
+                if (sorted)
+                {
+                    IntTensor tempResult =  factory.Create(this.shape,data);
+                    /**
+                    TODO sort based on dimension 
+                    Example. shape 2x2
+                    data = [[3,7],[4,2]] 
+
+                    # Exacted behaviour as pytorch
+                    if dim = 0:
+                        result = [[4,2],[3,7]] 
+                    if dim = 1:
+                        result = [[3,7],[2,4]] 
+                    
+                    Actual
+                    if dim = 0:
+                        result = [[2,3],[4,7]] 
+                    if dim = 1:
+                        result = [[2,3],[4,7]] 
+
+                    **/ 
+                    tempResult.Sort();
+                    return tempResult;
+                } 
+            } 
+            else if (k > this.shape[dim] ) 
+            {
+                throw new ArgumentException("k not in range for dimension");
+            }
+            
+            // find the top k and saved them in output variable
+            int[] new_shape = (int[]) this.shape.Clone();
+            new_shape[dim] = k; 
+            IntTensor result =  factory.Create(new_shape);
+            int[] dim_indices = new int[this.strides.Length];
+
+            /***
+            Example of minMax output
+            // shape 2x3x3
+            tensor = {{{1,2,3},{4,5,6},{7,8,9}},{{10,11,12},{13,14,15},{16,17,18}} } 
+            dim = 1
+            k = 2
+            // The new shape returnd = 2x2x3 
+            minMax = {
+                    '00'  , {7, 4},
+                    '01'  , {8, 5},
+                    '02'  , {9, 6} ,
+                    '10'  , {16, 13},
+                    '11'  , {17, 14},
+                    '12'  , {18, 15}
+                }     
+             */
+             // minMax hold either min or max value  depeneds on `largest` value, e.g. if largest == true then remove min values 
+            var minMax = new Dictionary<String, List<int> >();
+          
+            for (int i =0 ; i< this.data.Length ; i++)
+            {   
+                // minMaxKey will be empyt for one dimensional array
+                var minMaxKey =  "";
+               
+                // get the this data array dimension indice for one or more dimensional array
+                this.DataIndex2DimIndices(i,ref dim_indices);
+                for (int d =0 ; d< dim_indices.Length ; d++)
+                {
+                    if (d != dim )
+                    {
+                        minMaxKey +=  dim_indices[d].ToString();
+                       
+                    }
+                }
+                var minMaxValue = new List<int>(){this.data[this.DimIndices2DataIndex(ref dim_indices)]};
+                if (dim_indices[dim] <= result.shape[dim] - 1)
+                {
+                    if (!minMax.ContainsKey(minMaxKey))
+                    {   
+                        minMax.Add(minMaxKey,minMaxValue);
+                    }else{
+                        minMax[minMaxKey].Add(minMaxValue[0]);
+                    }      
+                }
+                else
+                {
+                    if (!minMax.ContainsKey(minMaxKey))
+                    {   
+                        minMax.Add(minMaxKey,minMaxValue);
+                    }
+                    else
+                    {
+                        var list = minMax[minMaxKey];
+                        if(largest)
+                        {
+                            var listMin = list.Min();
+                            if (listMin < minMaxValue[0])
+                            {
+                                list[list.IndexOf(listMin)] = minMaxValue[0];
+                            }
+                        }
+                        else
+                        {
+                            var listMax = list.Max();
+                            if (listMax > minMaxValue[0])
+                            {
+                                list[list.IndexOf(listMax)] = minMaxValue[0];
+                            }
+                        } 
+                    }
+                }
+            }
+            // convert mimMax to result.Data
+            foreach (var pair in minMax)
+            { 
+                for( var d=0; d < pair.Value.Count ; d++)
+                {
+                    // complete the key (e.g. pair.Key = '01', key = '010' where dim = 2, d= 0)
+                    var key = pair.Key.Insert(dim,d.ToString());
+                    // convert string to array
+                    dim_indices = key.Select(n => (int)Char.GetNumericValue(n)).ToArray();
+                    // set value 
+                    result.Data[result.DimIndices2DataIndex(ref dim_indices)] = pair.Value[d];   
+                } 
+            }
+
+            if (sorted)
+            {
+                /**
+                    TODO sort based on dimension 
+                    Example. shape 2x2
+                    data = [[3,7],[4,2]] 
+
+                    # Exacted behaviour as pytorch
+                    if dim = 0:
+                        result = [[4,2],[3,7]] 
+                    if dim = 1:
+                        result = [[3,7],[2,4]] 
+                    
+                    Actual
+                    if dim = 0:
+                        result = [[2,3],[4,7]] 
+                    if dim = 1:
+                        result = [[2,3],[4,7]] 
+
+                **/ 
+                result.Sort();
+            }
+
+            if (inline)
+            {
+                throw new NotImplementedException();
+            }else
+            {
+                return result;
+            }
+            
+        }
+
         // closes class and namespace
     }
 }

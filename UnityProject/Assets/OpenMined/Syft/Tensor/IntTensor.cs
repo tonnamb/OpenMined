@@ -397,6 +397,16 @@ namespace OpenMined.Syft.Tensor
                     var result = Tan();
                     return result.Id.ToString();
                 }
+                case "top_k":
+                {
+                    Debug.LogFormat("top_k");
+                    int k =int.Parse(msgObj.tensorIndexParams[0]);
+                    int dim  =int.Parse(msgObj.tensorIndexParams[1]);
+                    bool largest  =bool.Parse(msgObj.tensorIndexParams[2]);
+                    bool sorted =bool.Parse(msgObj.tensorIndexParams[3]);
+                    IntTensor result = this.TopK(k,dim,largest,sorted);
+                    return result.id + "";
+                }
                 case "trace":
                 {
                     var result = this.Trace();
