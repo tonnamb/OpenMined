@@ -677,6 +677,25 @@ namespace OpenMined.Tests.Editor.IntTensorTests
         }
 
         [Test]
+        public void Sinh()
+        {
+            int[] data1 = { -1, -2, 3, 4, 5, -6 };
+            int[] shape1 = { 6 };
+            var tensor1 = ctrl.intTensorFactory.Create(_data: data1, _shape: shape1);
+
+            float[] data2 = { -1.175201f, -3.62686f, 10.01787f, 27.28992f, 74.20321f, -201.7132f };
+            int[] shape2 = { 6 };
+            var expectedSinhTensor = ctrl.floatTensorFactory.Create(_data: data2, _shape: shape2);
+
+            var actualSinhTensor = tensor1.Sinh();
+
+            for (int i = 0; i < actualSinhTensor.Size; i++)
+            {
+                Assert.AreEqual(expectedSinhTensor[i], actualSinhTensor[i], 1e-4);
+            }
+        }
+
+        [Test]
         public void GetProto()
         {
             int[] data = {-1, 0, 1, int.MaxValue, int.MinValue};

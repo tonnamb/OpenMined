@@ -7,7 +7,7 @@ using System.Linq;
 namespace OpenMined.Syft.Tensor
 {
     public partial class IntTensor
-    {
+    {   
         public IntTensor Add(int value, bool inline = false)
         {
             if (dataOnGpu)
@@ -86,6 +86,17 @@ namespace OpenMined.Syft.Tensor
             return result;
         }
 
+        public FloatTensor Sinh(bool inline = false)
+        {
+            FloatTensor result = factory.ctrl.floatTensorFactory.Create(shape);
+            if (dataOnGpu)
+            {
+                throw new NotImplementedException();
+            }
+            result.Data = data.AsParallel().Select(x => (float) Math.Sinh((double) x)).ToArray();
+            return result;
+        }
+
         public FloatTensor Cos(bool inline = false)
         {
             FloatTensor result = factory.ctrl.floatTensorFactory.Create(shape);
@@ -159,7 +170,7 @@ namespace OpenMined.Syft.Tensor
             }
         }
 
-
+       
         public IntTensor View(int[] new_shape, bool inline = true)
         {
             if (!IsContiguous())

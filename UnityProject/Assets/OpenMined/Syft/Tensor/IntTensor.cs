@@ -364,6 +364,11 @@ namespace OpenMined.Syft.Tensor
                      var result = Sin();
                      return result.Id.ToString();
                 }
+                case "sinh":
+                {
+                    var result = Sinh();
+                    return result.Id.ToString();
+                }
 				case "neg":
 				{
 					Debug.LogFormat("neg");
