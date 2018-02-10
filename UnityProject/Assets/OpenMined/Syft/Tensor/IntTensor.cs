@@ -175,6 +175,14 @@ namespace OpenMined.Syft.Tensor
                     this.Lt(compareToTensor, inline: true);
                     return this.id + "";
                 }
+
+                case "max_":
+                {
+                    var compareToTensor = factory.Get(int.Parse(msgObj.tensorIndexParams[0]));
+                    this.Max(compareToTensor, inline: true);
+                    return this.id + "";
+                }
+
                 case "add_elem":
                 {
                     Debug.LogFormat("add_elem");

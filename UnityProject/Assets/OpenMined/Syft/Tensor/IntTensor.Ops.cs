@@ -271,6 +271,36 @@ namespace OpenMined.Syft.Tensor
             }
         }
 
+        public IntTensor Max(IntTensor other, bool inline = false)
+        {
+            // Run argument checks on CPU anyway just to make sure
+            if (!this.shape.SequenceEqual(other.shape))
+                throw new ArgumentException("Tensor dimensions must match");
+
+            if (other == null)
+                throw new ArgumentNullException();
+
+            if (dataOnGpu)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                if (inline)
+                {
+                    this.Data = data.AsParallel().Zip(other.Data.AsParallel(),
+                                                        (a, b) => (int)Math.Max(a, b)).ToArray();
+                    return this;
+                }
+                else
+                {
+                    IntTensor result = factory.Create(this.shape);
+                    result.Data = data.AsParallel().Zip(other.Data.AsParallel(),
+                                                        (a, b) => (int)Math.Max(a, b)).ToArray();
+                    return result;
+                }
+            }
+        }
         public IntTensor Sign(bool inline = false)
         {
             IntTensor result = factory.Create(this.shape);

@@ -258,6 +258,7 @@ namespace OpenMined.Tests.Editor.IntTensorTests
             }
         }
 
+        [Test]
         public void Equal()
         {
             int[] data1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -278,6 +279,27 @@ namespace OpenMined.Tests.Editor.IntTensorTests
             Assert.False(tensor1.Equal(tensor2));
             Assert.True(tensor1.Equal(tensor3));
         }
+
+        [Test]
+        public void Max_()
+        {
+            int[] data = { 4,0,6,-3,8,-2 };
+            int[] compareData = { 1,-2,2,-3,0,-1 };
+            int[] shape = { 1, 6 };
+            var tensor = ctrl.intTensorFactory.Create(_data: data, _shape: shape);
+            var compareTensor = ctrl.intTensorFactory.Create(_data: compareData, _shape: shape);
+
+
+            int[] expectedData = { 4, 0, 6, -3, 8, -1 };
+            var expectedOutput = ctrl.intTensorFactory.Create(_data: expectedData, _shape: shape);
+
+            var maxOutput = tensor.Max(compareTensor, inline: true);
+
+		for (int i = 0; i < expectedOutput.Size; i++)
+  	          {
+	                Assert.AreEqual(expectedOutput[i], maxOutput[i]);            
+		}
+	}
 
         [Test]
         public void PowElem()
