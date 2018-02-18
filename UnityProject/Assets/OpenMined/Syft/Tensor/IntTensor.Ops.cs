@@ -16,9 +16,15 @@ namespace OpenMined.Syft.Tensor
             }
 
             IntTensor result = factory.Create(this.shape);
-            result.Data = data.AsParallel().Select(x => x + value).ToArray();
-
-            return result;
+            if (inline) {
+                Data = data.AsParallel().Select(x => x + value).ToArray();
+                return this;
+            }
+            else
+            {
+                result.Data = data.AsParallel().Select(x => x + value).ToArray();
+                return result;
+            }
         }
 
         public FloatTensor Acos(bool inline = false)
@@ -48,9 +54,15 @@ namespace OpenMined.Syft.Tensor
             else
             {
                 // run Addition on the CPU
-                result.Data = data.AsParallel().Zip(x.Data.AsParallel(), (a, b) => a + b).ToArray();
-
-                return result;
+                if (inline) {
+                    Data = data.AsParallel().Zip(x.Data.AsParallel(), (a, b) => a + b).ToArray();
+                    return this;
+                }
+                else
+                {
+                    result.Data = data.AsParallel().Zip(x.Data.AsParallel(), (a, b) => a + b).ToArray();
+                    return result;
+                }
             }
 
         }
