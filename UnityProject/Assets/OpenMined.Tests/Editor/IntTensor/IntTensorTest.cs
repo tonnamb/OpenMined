@@ -617,6 +617,26 @@ namespace OpenMined.Tests.Tensor.IntTensor
             // }
 
         }
+
+        [Test]
+        public void Exp()
+        {
+            int[] inputShape = { 2, 2 };
+            int[] inputData = { -1, 1, 3, 34};
+            var inputTensor = ctrl.intTensorFactory.Create(_data: inputData, _shape: inputShape);
+
+            int[] outputShape = { 2, 2 };
+            int[] expectedData = { 0, 2, 20, 2147483647};
+            var expectedTensor = ctrl.intTensorFactory.Create(_data: expectedData, _shape: outputShape);
+
+            var outputTensorExp = inputTensor.Exp();
+
+            for (int i = 0; i < expectedTensor.Size; i++)
+            {
+                Assert.AreEqual(expectedTensor[i], outputTensorExp[i]);
+            }
+        }
+
         [Test]
         public void Lt()
         {

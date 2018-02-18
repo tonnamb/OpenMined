@@ -329,6 +329,41 @@ namespace OpenMined.Syft.Tensor
             return result;
         }
 
+
+        // Function called by Exp to handle Integer Overflow
+        private int handleOverFlow(int x)
+        {
+            try
+            {
+                //check for Integer overflow
+                checked
+                {
+                    return (int)Math.Exp(x);
+                }
+            }
+            catch(System.OverflowException e)
+            {
+                // There is no Integer Infinity Supported in C#
+                // You can throw an exception or return the Max Value of an integer
+                //throw new OverflowException();
+                return int.MaxValue;
+            }
+        }
+
+        public IntTensor Exp(bool inline = false)
+        {
+
+            if (dataOnGpu)
+            {
+                throw new NotImplementedException();
+            }
+
+            IntTensor result = factory.Create(this.shape);
+            result.Data = data.AsParallel().Select(x => handleOverFlow(x)).ToArray();
+
+            return result;
+        }
+
         public IntTensor Neg(bool inline = false, IntTensor result = null)
         {
             if (dataOnGpu)
