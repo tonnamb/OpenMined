@@ -6,10 +6,10 @@ using UnityEngine;
 using Google.Protobuf;
 using OpenMined.Protobuf.Onnx;
 
-namespace OpenMined.Tests.Editor.IntTensorTests
+namespace OpenMined.Tests.Tensor.IntTensor
 {
-    [Category("IntTensorCPUTests")]
-    public class IntTensorCPUTest
+    [Category("CPUTest")]
+    public class CPUTest
     {
         private SyftController ctrl;
 
