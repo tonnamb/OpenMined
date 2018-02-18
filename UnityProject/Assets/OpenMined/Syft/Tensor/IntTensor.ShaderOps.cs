@@ -74,6 +74,16 @@ namespace OpenMined.Syft.Tensor
             return result;
         }
 
+        public FloatTensor AcosGPU(FloatTensor result)
+        {
+            int kernel_id = shader.FindKernel("AcosInt");
+
+            shader.SetBuffer(kernel_id, "AcosIntData",this.DataBuffer);
+            shader.SetBuffer(kernel_id, "AcosIntDataResult", result.DataBuffer);
+            shader.Dispatch(kernel_id, this.size,1,1);
+            return result;
+        }
+
         public IntTensor AbsGPU(IntTensor result)
         {
             int kernel_id = shader.FindKernel("AbsElemInt");

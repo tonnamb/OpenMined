@@ -44,6 +44,15 @@ void Acos_ (uint3 id: SV_DispatchThreadID) {
     AcosData_[id.x] = acos(AcosData_[id.x]);
 }
 
+#pragma kernel AcosInt
+StructuredBuffer<int> AcosIntData;
+RWStructuredBuffer<float> AcosIntDataResult;
+
+[numthreads(4,1,1)]
+void AcosInt (uint3 id: SV_DispatchThreadID) {
+    AcosIntDataResult[id.x] = acos(AcosIntData[id.x]);
+}
+
 #pragma kernel Asin
 
 StructuredBuffer<float> AsinData;

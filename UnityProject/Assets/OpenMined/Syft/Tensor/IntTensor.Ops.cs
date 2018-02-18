@@ -27,7 +27,8 @@ namespace OpenMined.Syft.Tensor
 
             if (dataOnGpu)
             {
-                throw new NotImplementedException();
+                result.Gpu(shader);
+                return AcosGPU (result);
             }
             result.Data = data.AsParallel().Select(x => (float)Math.Acos((double)x)).ToArray();
 

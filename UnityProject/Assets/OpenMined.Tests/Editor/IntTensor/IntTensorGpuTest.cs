@@ -125,6 +125,24 @@ namespace OpenMined.Tests.Tensor.IntTensor
         }
 
         [Test]
+        public void Acos()
+        {
+            int[] data1 = { 1, 0, -1, 1, 1, 0 };
+            int[] shape1 = { 6 };
+            var tensor1 = ctrl.intTensorFactory.Create(_data: data1, _shape: shape1);
+            tensor1.Gpu(shader);
+
+            float[] data2 = { 0, 1.57079633f, 3.14159265f, 0, 0, 1.57079633f };
+            int[] shape2 = { 6 };
+            var expectedTensor = ctrl.floatTensorFactory.Create(_data: data2, _shape: shape2);
+            expectedTensor.Gpu(shader);
+
+            var acosTensor = tensor1.Acos();
+
+            AssertApproximatelyEqualTensorsData(acosTensor,expectedTensor);
+        }
+
+        [Test]
         public void Add()
         {
             int[] data1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
