@@ -221,6 +221,11 @@ namespace OpenMined.Syft.Tensor
                   this.Eq(other, inline: true);
                   return this.id + "";
                 }
+                case "exp":
+                {
+                  var result = this.Exp();
+                  return result.id + "";
+                }
                 case "cos":
                 {
                     var result = Cos();
